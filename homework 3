@@ -1,0 +1,42 @@
+import numpy as np
+import scipy.interpolate as spi
+from scipy.optimize import newton
+
+#Q1拉格朗日插值近似 cos(0.750)
+def lagrange_interpolation(x_vals, y_vals, x):
+    n = len(x_vals)
+    result = 0
+    for i in range(n):
+        term = y_vals[i]
+        for j in range(n):
+            if i != j:
+                term *= (x - x_vals[j]) / (x_vals[i] - x_vals[j])
+        result += term
+    return result
+
+x_vals = np.array([0.0, 0.6, 0.9])
+y_vals = np.cos(x_vals)
+true_value = np.cos(0.750)
+interp_value = lagrange_interpolation(x_vals, y_vals, 0.750)
+error = abs(true_value - interp_value)
+
+print(f"拉格朗日插值近似值: {interp_value}")
+print(f"誤差: {error}")
+
+#Q2: 反向插值法求解 e^(-x) - x = 0
+def inverse_interpolation():
+    def f(x):
+        return np.exp(-x) - x
+    root = newton(f, 0.5)
+    return root
+
+solution = inverse_interpolation()
+print(f"反向插值求解 x 值: {solution}")
+
+#Q3: Hermite 插值法預測車輛位置與速度
+t_vals = np.array([0, 5, 10, 15, 20])
+x_vals = np.array([0, 150, 370, 510, 590])
+dx_vals = np.array([0, 40, 75, 100, 110])
+hermite_poly = spi.BarycentricInterpolator(t_vals, x_vals)
+predicted_position = hermite_poly(10)
+print(f"預測 t=10s 時的位置: {predicted_position}")
