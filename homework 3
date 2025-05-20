@@ -24,19 +24,28 @@ print(f"拉格朗日插值近似值: {interp_value}")
 print(f"誤差: {error}")
 
 #Q2: 反向插值法求解 e^(-x) - x = 0
-def inverse_interpolation():
+def inverse_interpolation_fixed():
     def f(x):
         return np.exp(-x) - x
-    root = newton(f, 0.5)
-    return root
-
-solution = inverse_interpolation()
-print(f"反向插值求解 x 值: {solution}")
+    x_vals = np.array([0.3, 0.5, 0.7])
+    y_vals = f(x_vals)
+    
+    # 反過來插值：x = f^-1(y)，目標 y = 0
+    return lagrange_interpolation(y_vals, x_vals, 0.0)
 
 #Q3: Hermite 插值法預測車輛位置與速度
-t_vals = np.array([0, 5, 10, 15, 20])
-x_vals = np.array([0, 150, 370, 510, 590])
-dx_vals = np.array([0, 40, 75, 100, 110])
-hermite_poly = spi.BarycentricInterpolator(t_vals, x_vals)
-predicted_position = hermite_poly(10)
+from scipy.interpolate import KroghInterpolator
+
+t_nodes = []
+x_nodes = []
+
+for i in range(len(t_vals)):
+    t_nodes.extend([t_vals[i], t_vals[i]])
+    x_nodes.extend([x_vals[i], dx_vals[i]])
+
+hermite = KroghInterpolator(t_nodes, x_nodes)
+predicted_position = hermite(10)
+predicted_velocity = hermite.derivative()(10)
+
 print(f"預測 t=10s 時的位置: {predicted_position}")
+print(f"預測 t=10s 時的速度: {predicted_velocity}")
